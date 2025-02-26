@@ -1,0 +1,104 @@
+---
+title: "Titis in the mist"
+author: "Soumalya"
+format: html
+output:
+  prettydoc::html_pretty:
+    theme: cayman   # Built-in Quarto/Bootstrap theme that matches prettydoc "cayman"
+toc: true  # Enable table of contents
+highlight: github 
+editor: visual
+---
+
+```{r}
+knitr::include_graphics("/Users/soumalyaghorui/AN 588/Titis in the mist/titimonkey_003.jpg")
+
+
+```
+
+```{r}
+file.exists("/Users/soumalyaghorui/AN 588/Titis in the mist/titimonkey_003.jpg")
+```
+
+Every Saturday morning, at the same time, a primatologist goes and sits in the forest to listen for titi monkey calls, counting the number of calls they hear in a 2 hour window from 5am to 7am. Based on previous knowledge, she believes that the mean number of calls she will hear in that time is exactly 15. Let X represent the appropriate Poisson random variable of the number of calls heard in each monitoring session.
+
+1.  What is the probability that she will hear more than 8 calls during any given session?
+
+2.  What is the probability that she will hear no calls in a session?
+
+3.  What is the probability that she will hear exactly 3 calls in a session?
+
+4.  Plot the relevant Poisson mass function over the values in range 0 ≤ x ≤ 30..
+
+5.  Simulate 104 results from this distribution (i.e., 2 years of Saturday monitoring sessions).
+
+6.  Plot the simulated results using hist() and use xlim() to set the horizontal limits to be from 0 to 30. How does your histogram compare to the shape of the probability mass function you plotted above?
+
+```{r}
+lambda <- 15 #Define the Poisson parameter (mean = 15)
+```
+
+## 1) Probability that she will hear more than 8 calls
+
+```{r}
+prob_more_than_8 <- 1 - ppois(8, lambda) #Probability that she will hear more than 8 calls in a session
+prob_more_than_8
+```
+
+## 2) Probability that she will hear no calls
+
+```{r}
+prob_zero_calls <- dpois(0, lambda)
+prob_zero_calls
+```
+
+## 3) Probability that she will hear exactly 3 calls
+
+```{r}
+prob_three_calls <- dpois(3, lambda) #Probability that she will hear exactly 3 calls in a session
+prob_three_calls
+```
+
+## 4) Plot the PMF for x in \[0, 30\]
+
+```{r}
+x_vals <- 0:30 #Plot the relevant Poisson mass function over 0 ≤ x ≤ 30
+pmf_vals <- dpois(x_vals, lambda)
+plot(x_vals, pmf_vals, 
+     type = "h", lwd = 2, col = "blue",
+     main = "Poisson(15) Probability Mass Function (0 ≤ x ≤ 30)",
+     xlab = "Number of calls (x)",
+     ylab = "P(X = x)")
+```
+
+## 5) Simulate 104 sessions and the resultant simulated histogram plots
+
+```{r}
+set.seed(123)   #Set a seed so we can reproduce the random results for reproducibility (Simulate 104 results from this distribution (i.e., 2 years of Saturday monitoring sessions)
+sim_data <- rpois(104, lambda) # Generate 104 random Poisson(15) values
+
+max_val <- max(sim_data)
+
+hist(sim_data,
+     breaks = seq(-0.5, max_val + 0.5, by = 1),
+     xlim   = c(0, 30),
+     col    = "lightblue",
+     main   = "Histogram of Simulated Poisson(15) Counts",
+     xlab   = "Number of calls")
+```
+
+Difficulties I faced while writing this code:
+
+1.  **Mixing Up dpois() and ppois()**\
+    I kept confusing dpois() (probability mass at a single value) with ppois()(cumulative probability). For example, to find P(X\>8)P(X\>8)P(X\>8), I initially tried dpois(8, lambda) instead of 1 - ppois(8, lambda).
+
+2.  **Plotting the PMF**\
+    I wasn’t sure at first how to draw the Poisson mass function. I tried plot (dpois(...)) without an x-axis or used typle = "l" (line) instead of type = "h" (histogram-like lines). It took me a bit to remember the right approach for a “stick plot.”
+
+3.  **Histogram “some 'x' not counted” Error**\
+    I got this error: Error in hist.default(sim_data, breaks = seq(-0.5, 30.5, by = 1), xlim = c(0, :some 'x' not counted; maybe 'breaks' do not span range of 'x'
+
+    When I tried setting breaks from -0.5 to 30.5, I got that error about not all values being counted. It confused me at first, but then I realized some simulated values were above 30, which caused the issue.
+
+4.  **Comparing the Theoretical PMF with the Empirical Histogram**\
+    After plotting both, I wondered why the histogram didn’t match the PMF perfectly. Eventually, I remembered that with random simulation, the empirical results will approximate the true distribution shape, but there will always be some variation
